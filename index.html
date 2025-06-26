@@ -1,0 +1,762 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Electrical Services App</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+        
+        .container {
+            max-width: 500px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: white;
+            min-height: 100vh;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        
+        header {
+            background-color: #FFA500;
+            color: white;
+            padding: 15px;
+            text-align: center;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        
+        h1 {
+            margin: 0;
+            font-size: 24px;
+        }
+        
+        .home-screen {
+            text-align: center;
+        }
+        
+        .service-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .service-card {
+            background-color: white;
+            border-radius: 10px;
+            padding: 15px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            text-align: center;
+            cursor: pointer;
+            transition: transform 0.2s;
+            position: relative;
+        }
+        
+        .service-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .service-card img {
+            width: 100%;
+            height: 80px;
+            object-fit: cover;
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+        
+        .service-card h3 {
+            margin: 0;
+            font-size: 14px;
+            color: #FFA500;
+        }
+        
+        .rating {
+            display: flex;
+            justify-content: center;
+            margin-top: 8px;
+        }
+        
+        .star {
+            color: #FFD700;
+            font-size: 14px;
+            margin: 0 1px;
+        }
+        
+        .rating-text {
+            font-size: 12px;
+            color: #666;
+            margin-left: 5px;
+        }
+        
+        .service-section {
+            margin-bottom: 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 12px;
+            display: none;
+        }
+        
+        .service-title {
+            background-color: #f0f0f0;
+            padding: 8px;
+            margin: -12px -12px 12px -12px;
+            border-radius: 8px 8px 0 0;
+            font-weight: bold;
+            color: #FFA500;
+            font-size: 16px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 500;
+            font-size: 14px;
+        }
+        
+        input, select {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        
+        button {
+            background-color: #FFA500;
+            color: white;
+            border: none;
+            padding: 10px;
+            border-radius: 4px;
+            width: 100%;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 8px;
+        }
+        
+        button:hover {
+            background-color: #e69500;
+        }
+        
+        .result {
+            margin-top: 12px;
+            padding: 8px;
+            background-color: #f9f9f9;
+            border-radius: 4px;
+            display: none;
+            font-size: 14px;
+        }
+        
+        .back-btn {
+            background-color: #666;
+            margin-bottom: 15px;
+        }
+        
+        .cart-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .cart-actions button {
+            flex: 1;
+        }
+        
+        .whatsapp-btn {
+            background-color: #25D366;
+        }
+        
+        .whatsapp-btn:hover {
+            background-color: #1fba57;
+        }
+        
+        .customer-info {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px dashed #ddd;
+        }
+        
+        .phone-input {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .phone-input select {
+            width: 80px;
+        }
+        
+        .phone-input input {
+            flex: 1;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Home Screen -->
+        <div class="home-screen" id="homeScreen">
+            <header>
+                <h1>Electrical Services</h1>
+                <p>Professional solutions for your electrical needs</p>
+            </header>
+            
+            <img src="https://images.unsplash.com/photo-1581092918056-0c4c3acd3789?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&h=200&q=80" alt="Electrical Services" style="width:100%; border-radius:8px;">
+            
+            <div class="service-grid">
+                <div class="service-card" onclick="showService('wiring')">
+                    <img src="https://images.unsplash.com/photo-1597852074816-d933c7d2b988?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&h=80&q=80" alt="Wiring">
+                    <h3>New Wiring</h3>
+                    <div class="rating">
+                        <span class="star">★</span>
+                        <span class="star">★</span>
+                        <span class="star">★</span>
+                        <span class="star">★</span>
+                        <span class="star">★</span>
+                        <span class="star">★</span>
+                        <span class="star">☆</span>
+                        <span class="rating-text">6/7</span>
+                    </div>
+                </div>
+                
+                <div class="service-card" onclick="showService('visit')">
+                    <img src="https://images.unsplash.com/photo-1600881336149-c8b8f5f3e4f2?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&h=80&q=80" alt="Service Visit">
+                    <h3>Service Visit</h3>
+                    <div class="rating">
+                        <span class="star">★</span>
+                        <span class="star">★</span>
+                        <span class="star">★</span>
+                        <span class="star">★</span>
+                        <span class="star">★</span>
+                        <span class="star">☆</span>
+                        <span class="star">☆</span>
+                        <span class="rating-text">5/7</span>
+                    </div>
+                </div>
+                
+                <div class="service-card" onclick="showService('inverter')">
+                    <img src="https://images.unsplash.com/photo-1605980776566-0486c3ac7617?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&h=80&q=80" alt="Inverter">
+                    <h3>Inverter Installation</h3>
+                    <div class="rating">
+                        <span class="star">★</span>
+                        <span class="star">★</span>
+                        <span class="star">★</span>
+                        <span class="star">★</span>
+                        <span class="star">★</span>
+                        <span class="star">★</span>
+                        <span class="star">★</span>
+                        <span class="rating-text">7/7</span>
+                    </div>
+                </div>
+                
+                <div class="service-card" onclick="showService('fan')">
+                    <img src="https://images.unsplash.com/photo-1584473457409-ceb3f7c2c92e?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&h=80&q=80" alt="Fan Installation">
+                    <h3>Fan Installation</h3>
+                    <div class="rating">
+                        <span class="star">★</span>
+                        <span class="star">★</span>
+                        <span class="star">★</span>
+                        <span class="star">★</span>
+                        <span class="star">★</span>
+                        <span class="star">★</span>
+                        <span class="star">☆</span>
+                        <span class="rating-text">6/7</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- New Wiring Cost Calculator -->
+        <div class="service-section" id="wiringService">
+            <div class="service-title">New Wiring Cost Calculator</div>
+            <button class="back-btn" onclick="showHome()">← Back to Services</button>
+            
+            <label for="roomCount">Number of Rooms:</label>
+            <select id="roomCount">
+                <option value="1">1 Room</option>
+                <option value="2">2 Rooms</option>
+                <option value="3">3 Rooms</option>
+                <option value="4">4 Rooms</option>
+                <option value="5">5 Rooms</option>
+                <option value="6">6+ Rooms</option>
+            </select>
+            
+            <label for="wiringType">Wiring Type:</label>
+            <select id="wiringType">
+                <option value="basic">Basic Wiring</option>
+                <option value="premium">Premium Wiring</option>
+                <option value="smart">Smart Home Wiring</option>
+            </select>
+            
+            <div class="customer-info">
+                <label for="wiringCustomerName">Your Name:</label>
+                <input type="text" id="wiringCustomerName" placeholder="Enter your name">
+                
+                <label for="wiringCustomerPhone">Phone Number:</label>
+                <div class="phone-input">
+                    <select id="wiringCountryCode">
+                        <option value="+91">+91 (IN)</option>
+                        <option value="+1">+1 (US)</option>
+                        <option value="+44">+44 (UK)</option>
+                    </select>
+                    <input type="tel" id="wiringCustomerPhone" placeholder="Phone number">
+                </div>
+                
+                <label for="wiringAddress">Address:</label>
+                <textarea id="wiringAddress" placeholder="Enter your address" rows="2" style="width:100%; padding:8px; border:1px solid #ddd; border-radius:4px;"></textarea>
+            </div>
+            
+            <button onclick="calculateWiringCost()">Calculate Cost</button>
+            
+            <div id="wiringResult" class="result"></div>
+            
+            <div class="cart-actions" id="wiringCartActions" style="display:none;">
+                <button onclick="showHome()">Add Another Service</button>
+                <button class="whatsapp-btn" onclick="sendToWhatsApp('wiring')">Send via WhatsApp</button>
+            </div>
+        </div>
+        
+        <!-- Visiting Charge -->
+        <div class="service-section" id="visitService">
+            <div class="service-title">Service Visit Charges</div>
+            <button class="back-btn" onclick="showHome()">← Back to Services</button>
+            
+            <label for="issueType">Select Issue Type:</label>
+            <select id="issueType">
+                <option value="inspection">General Inspection</option>
+                <option value="repair">Repair Work</option>
+                <option value="emergency">Emergency Service</option>
+                <option value="consultation">Consultation</option>
+            </select>
+            
+            <label for="distance">Distance from Service Center (km):</label>
+            <input type="number" id="distance" min="0" value="0">
+            
+            <div class="customer-info">
+                <label for="visitCustomerName">Your Name:</label>
+                <input type="text" id="visitCustomerName" placeholder="Enter your name">
+                
+                <label for="visitCustomerPhone">Phone Number:</label>
+                <div class="phone-input">
+                    <select id="visitCountryCode">
+                        <option value="+91">+91 (IN)</option>
+                        <option value="+1">+1 (US)</option>
+                        <option value="+44">+44 (UK)</option>
+                    </select>
+                    <input type="tel" id="visitCustomerPhone" placeholder="Phone number">
+                </div>
+                
+                <label for="visitAddress">Address:</label>
+                <textarea id="visitAddress" placeholder="Enter your address" rows="2" style="width:100%; padding:8px; border:1px solid #ddd; border-radius:4px;"></textarea>
+            </div>
+            
+            <button onclick="calculateVisitCharge()">Calculate Visit Charge</button>
+            
+            <div id="visitResult" class="result"></div>
+            
+            <div class="cart-actions" id="visitCartActions" style="display:none;">
+                <button onclick="showHome()">Add Another Service</button>
+                <button class="whatsapp-btn" onclick="sendToWhatsApp('visit')">Send via WhatsApp</button>
+            </div>
+        </div>
+        
+        <!-- Battery Inverter Installation -->
+        <div class="service-section" id="inverterService">
+            <div class="service-title">Battery Inverter Installation</div>
+            <button class="back-btn" onclick="showHome()">← Back to Services</button>
+            
+            <label for="inverterCapacity">Inverter Capacity (VA):</label>
+            <select id="inverterCapacity">
+                <option value="600">600 VA</option>
+                <option value="800">800 VA</option>
+                <option value="1000">1000 VA</option>
+                <option value="1500">1500 VA</option>
+                <option value="2000">2000+ VA</option>
+            </select>
+            
+            <label for="batteryCount">Number of Batteries:</label>
+            <input type="number" id="batteryCount" min="1" value="1">
+            
+            <label>
+                <input type="checkbox" id="existingWiring"> Existing wiring suitable
+            </label>
+            
+            <div class="customer-info">
+                <label for="inverterCustomerName">Your Name:</label>
+                <input type="text" id="inverterCustomerName" placeholder="Enter your name">
+                
+                <label for="inverterCustomerPhone">Phone Number:</label>
+                <div class="phone-input">
+                    <select id="inverterCountryCode">
+                        <option value="+91">+91 (IN)</option>
+                        <option value="+1">+1 (US)</option>
+                        <option value="+44">+44 (UK)</option>
+                    </select>
+                    <input type="tel" id="inverterCustomerPhone" placeholder="Phone number">
+                </div>
+                
+                <label for="inverterAddress">Address:</label>
+                <textarea id="inverterAddress" placeholder="Enter your address" rows="2" style="width:100%; padding:8px; border:1px solid #ddd; border-radius:4px;"></textarea>
+            </div>
+            
+            <button onclick="calculateInverterCost()">Calculate Installation Cost</button>
+            
+            <div id="inverterResult" class="result"></div>
+            
+            <div class="cart-actions" id="inverterCartActions" style="display:none;">
+                <button onclick="showHome()">Add Another Service</button>
+                <button class="whatsapp-btn" onclick="sendToWhatsApp('inverter')">Send via WhatsApp</button>
+            </div>
+        </div>
+        
+        <!-- Fan Installation -->
+        <div class="service-section" id="fanService">
+            <div class="service-title">Fan Installation Service</div>
+            <button class="back-btn" onclick="showHome()">← Back to Services</button>
+            
+            <label for="fanType">Fan Type:</label>
+            <select id="fanType">
+                <option value="ceiling">Ceiling Fan</option>
+                <option value="wall">Wall Fan</option>
+                <option value="exhaust">Exhaust Fan</option>
+                <option value="table">Table Fan</option>
+            </select>
+            
+            <label for="fanCount">Number of Fans:</label>
+            <input type="number" id="fanCount" min="1" value="1">
+            
+            <label>
+                <input type="checkbox" id="existingHook"> Existing hook available
+            </label>
+            
+            <div class="customer-info">
+                <label for="fanCustomerName">Your Name:</label>
+                <input type="text" id="fanCustomerName" placeholder="Enter your name">
+                
+                <label for="fanCustomerPhone">Phone Number:</label>
+                <div class="phone-input">
+                    <select id="fanCountryCode">
+                        <option value="+91">+91 (IN)</option>
+                        <option value="+1">+1 (US)</option>
+                        <option value="+44">+44 (UK)</option>
+                    </select>
+                    <input type="tel" id="fanCustomerPhone" placeholder="Phone number">
+                </div>
+                
+                <label for="fanAddress">Address:</label>
+                <textarea id="fanAddress" placeholder="Enter your address" rows="2" style="width:100%; padding:8px; border:1px solid #ddd; border-radius:4px;"></textarea>
+            </div>
+            
+            <button onclick="calculateFanInstallationCost()">Calculate Installation Cost</button>
+            
+            <div id="fanResult" class="result"></div>
+            
+            <div class="cart-actions" id="fanCartActions" style="display:none;">
+                <button onclick="showHome()">Add Another Service</button>
+                <button class="whatsapp-btn" onclick="sendToWhatsApp('fan')">Send via WhatsApp</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Navigation functions
+        function showHome() {
+            document.getElementById('homeScreen').style.display = 'block';
+            document.getElementById('wiringService').style.display = 'none';
+            document.getElementById('visitService').style.display = 'none';
+            document.getElementById('inverterService').style.display = 'none';
+            document.getElementById('fanService').style.display = 'none';
+        }
+        
+        function showService(service) {
+            document.getElementById('homeScreen').style.display = 'none';
+            document.getElementById('wiringService').style.display = 'none';
+            document.getElementById('visitService').style.display = 'none';
+            document.getElementById('inverterService').style.display = 'none';
+            document.getElementById('fanService').style.display = 'none';
+            
+            document.getElementById(service + 'Service').style.display = 'block';
+        }
+        
+        // Wiring Cost Calculation
+        function calculateWiringCost() {
+            const roomCount = parseInt(document.getElementById('roomCount').value);
+            const wiringType = document.getElementById('wiringType').value;
+            const customerName = document.getElementById('wiringCustomerName').value.trim();
+            const customerPhone = document.getElementById('wiringCustomerPhone').value.trim();
+            const countryCode = document.getElementById('wiringCountryCode').value;
+            const address = document.getElementById('wiringAddress').value.trim();
+            
+            if (!customerName) {
+                alert('Please enter your name');
+                return;
+            }
+            
+            if (!customerPhone) {
+                alert('Please enter your phone number');
+                return;
+            }
+            
+            let basePrice;
+            switch(wiringType) {
+                case 'basic': basePrice = 5000; break;
+                case 'premium': basePrice = 8000; break;
+                case 'smart': basePrice = 12000; break;
+                default: basePrice = 5000;
+            }
+            
+            let totalCost = basePrice * roomCount;
+            if (roomCount >= 6) {
+                totalCost = basePrice * 5 + (roomCount - 5) * (basePrice * 0.8);
+            }
+            
+            const resultDiv = document.getElementById('wiringResult');
+            resultDiv.innerHTML = `
+                <strong>Estimated Cost:</strong> ₹${totalCost.toLocaleString()}<br>
+                <small>Includes materials and labor for ${roomCount} room(s) with ${wiringType} wiring</small>
+            `;
+            resultDiv.style.display = 'block';
+            
+            document.getElementById('wiringCartActions').style.display = 'flex';
+            
+            // Store the calculation
+            window.currentCalculation = {
+                service: 'New Wiring',
+                details: {
+                    roomCount,
+                    wiringType,
+                    customerName,
+                    customerPhone: countryCode + customerPhone,
+                    address
+                },
+                cost: totalCost
+            };
+        }
+        
+        // Visit Charge Calculation
+        function calculateVisitCharge() {
+            const issueType = document.getElementById('issueType').value;
+            const distance = parseInt(document.getElementById('distance').value) || 0;
+            const customerName = document.getElementById('visitCustomerName').value.trim();
+            const customerPhone = document.getElementById('visitCustomerPhone').value.trim();
+            const countryCode = document.getElementById('visitCountryCode').value;
+            const address = document.getElementById('visitAddress').value.trim();
+            
+            if (!customerName) {
+                alert('Please enter your name');
+                return;
+            }
+            
+            if (!customerPhone) {
+                alert('Please enter your phone number');
+                return;
+            }
+            
+            let baseCharge;
+            switch(issueType) {
+                case 'inspection': baseCharge = 300; break;
+                case 'repair': baseCharge = 500; break;
+                case 'emergency': baseCharge = 800; break;
+                case 'consultation': baseCharge = 400; break;
+                default: baseCharge = 300;
+            }
+            
+            let distanceCharge = Math.max(0, distance - 5) * 10;
+            if (distanceCharge > 200) distanceCharge = 200;
+            
+            const totalCharge = baseCharge + distanceCharge;
+            
+            const resultDiv = document.getElementById('visitResult');
+            resultDiv.innerHTML = `
+                <strong>Service Visit Charge:</strong> ₹${totalCharge.toLocaleString()}<br>
+                <small>Base charge: ₹${baseCharge} + Distance charge: ₹${distanceCharge}</small>
+            `;
+            resultDiv.style.display = 'block';
+            
+            document.getElementById('visitCartActions').style.display = 'flex';
+            
+            // Store the calculation
+            window.currentCalculation = {
+                service: 'Service Visit',
+                details: {
+                    issueType,
+                    distance,
+                    customerName,
+                    customerPhone: countryCode + customerPhone,
+                    address
+                },
+                cost: totalCharge
+            };
+        }
+        
+        // Inverter Installation Cost
+        function calculateInverterCost() {
+            const capacity = parseInt(document.getElementById('inverterCapacity').value);
+            const batteryCount = parseInt(document.getElementById('batteryCount').value) || 1;
+            const existingWiring = document.getElementById('existingWiring').checked;
+            const customerName = document.getElementById('inverterCustomerName').value.trim();
+            const customerPhone = document.getElementById('inverterCustomerPhone').value.trim();
+            const countryCode = document.getElementById('inverterCountryCode').value;
+            const address = document.getElementById('inverterAddress').value.trim();
+            
+            if (!customerName) {
+                alert('Please enter your name');
+                return;
+            }
+            
+            if (!customerPhone) {
+                alert('Please enter your phone number');
+                return;
+            }
+            
+            let basePrice;
+            if (capacity <= 600) basePrice = 1500;
+            else if (capacity <= 1000) basePrice = 2000;
+            else if (capacity <= 1500) basePrice = 2500;
+            else basePrice = 3000;
+            
+            const batteryInstallation = batteryCount * 500;
+            const wiringCost = existingWiring ? 0 : 1000;
+            
+            const totalCost = basePrice + batteryInstallation + wiringCost;
+            
+            const resultDiv = document.getElementById('inverterResult');
+            resultDiv.innerHTML = `
+                <strong>Total Installation Cost:</strong> ₹${totalCost.toLocaleString()}<br>
+                <small>Inverter install: ₹${basePrice} + Batteries: ₹${batteryInstallation} ${existingWiring ? '' : '+ New wiring: ₹1000'}</small>
+            `;
+            resultDiv.style.display = 'block';
+            
+            document.getElementById('inverterCartActions').style.display = 'flex';
+            
+            // Store the calculation
+            window.currentCalculation = {
+                service: 'Inverter Installation',
+                details: {
+                    capacity,
+                    batteryCount,
+                    existingWiring,
+                    customerName,
+                    customerPhone: countryCode + customerPhone,
+                    address
+                },
+                cost: totalCost
+            };
+        }
+        
+        // Fan Installation Cost
+        function calculateFanInstallationCost() {
+            const fanType = document.getElementById('fanType').value;
+            const fanCount = parseInt(document.getElementById('fanCount').value) || 1;
+            const existingHook = document.getElementById('existingHook').checked;
+            const customerName = document.getElementById('fanCustomerName').value.trim();
+            const customerPhone = document.getElementById('fanCustomerPhone').value.trim();
+            const countryCode = document.getElementById('fanCountryCode').value;
+            const address = document.getElementById('fanAddress').value.trim();
+            
+            if (!customerName) {
+                alert('Please enter your name');
+                return;
+            }
+            
+            if (!customerPhone) {
+                alert('Please enter your phone number');
+                return;
+            }
+            
+            let basePrice;
+            switch(fanType) {
+                case 'ceiling': basePrice = 300; break;
+                case 'wall': basePrice = 400; break;
+                case 'exhaust': basePrice = 500; break;
+                case 'table': basePrice = 200; break;
+                default: basePrice = 300;
+            }
+            
+            const hookCost = existingHook ? 0 : 150;
+            const totalPerFan = basePrice + hookCost;
+            const totalCost = totalPerFan * fanCount;
+            
+            const resultDiv = document.getElementById('fanResult');
+            resultDiv.innerHTML = `
+                <strong>Total Installation Cost:</strong> ₹${totalCost.toLocaleString()}<br>
+                <small>${fanCount} ${fanType} fan(s) @ ₹${totalPerFan} each</small>
+            `;
+            resultDiv.style.display = 'block';
+            
+            document.getElementById('fanCartActions').style.display = 'flex';
+            
+            // Store the calculation
+            window.currentCalculation = {
+                service: 'Fan Installation',
+                details: {
+                    fanType,
+                    fanCount,
+                    existingHook,
+                    customerName,
+                    customerPhone: countryCode + customerPhone,
+                    address
+                },
+                cost: totalCost
+            };
+        }
+        
+        // Send to WhatsApp with detailed information
+        function sendToWhatsApp(serviceType) {
+            if (!window.currentCalculation) return;
+            
+            const calc = window.currentCalculation;
+            const phoneNumber = "917979922833"; // Replace with your WhatsApp number
+            
+            // Create detailed message with all inputs
+            let message = `*Electrical Service Request*\n\n`;
+            message += `*Service Type:* ${calc.service}\n`;
+            message += `*Customer Name:* ${calc.details.customerName}\n`;
+            message += `*Phone:* ${calc.details.customerPhone}\n`;
+            
+            if (calc.details.address) {
+                message += `*Address:* ${calc.details.address}\n`;
+            }
+            
+            message += `\n*Service Details:*\n`;
+            
+            // Service-specific details
+            switch(serviceType) {
+                case 'wiring':
+                    message += `- Rooms: ${calc.details.roomCount}\n`;
+                    message += `- Wiring Type: ${calc.details.wiringType}\n`;
+                    break;
+                case 'visit':
+                    message += `- Issue Type: ${calc.details.issueType}\n`;
+                    message += `- Distance: ${calc.details.distance} km\n`;
+                    break;
+                case 'inverter':
+                    message += `- Capacity: ${calc.details.capacity} VA\n`;
+                    message += `- Batteries: ${calc.details.batteryCount}\n`;
+                    message += `- Existing Wiring: ${calc.details.existingWiring ? 'Yes' : 'No'}\n`;
+                    break;
+                case 'fan':
+                    message += `- Fan Type: ${calc.details.fanType}\n`;
+                    message += `- Quantity: ${calc.details.fanCount}\n`;
+                    message += `- Existing Hook: ${calc.details.existingHook ? 'Yes' : 'No'}\n`;
+                    break;
+            }
+            
+            message += `\n*Estimated Cost:* ₹${calc.cost.toLocaleString()}\n\n`;
+            message += `_This estimate was generated from our Electrical Services App_`;
+            
+            const encodedMessage = encodeURIComponent(message);
+            window.open(`https://wa.me/${phoneNumber}?text=${encodedMessage}`, '_blank');
+        }
+    </script>
+</body>
+</html>
