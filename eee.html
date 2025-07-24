@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LUXE Hotel - QR Code Ordering</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
+    <style>
+        /* (Previous CSS styles remain the same) */
+        
+        /* QR Scanner Modal Styles */
+        .qr-scanner-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.9);
+            z-index: 3000;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .qr-scanner-modal.active {
+            display: flex;
+        }
+        
+        .scanner-container {
+            width: 90%;
+            max-width: 500px;
+            position: relative;
+        }
+        
+        #qr-video {
+            width: 100%;
+            border: 3px solid var(--primary);
+            border-radius: 8px;
+        }
+        
+        .scanner-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .scanner-frame {
+            width: 70%;
+            height: 70%;
+            border: 4px dashed var(--primary);
+            position: relative;
+        }
+        
+        .scanner-controls {
+            margin-top: 20px;
+            display: flex;
+            gap: 15px;
+        }
+        
+        .scanner-btn {
+            padding: 10px 20px;
+            background-color: var(--primary);
+            color: var(--secondary);
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 600;
+        }
+        
+        .qr-instructions {
+            color: white;
+            text-align: center;
+            margin-bottom: 20px;
+            max-width: 500px;
+        }
+        
+        .table-qr-btn {
+            background-color: var(--accent);
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-left: 10px;
+            font-family: 'Montserrat', sans-serif;
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- (Previous HTML remains the same until the order modal) -->
+
+    <!-- Order Modal -->
+    <div class="modal" id="order-modal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h3>Complete Your Order</h3>
+            <form id="order-form">
+                <div class="form-group">
+                    <label for="table-number">Table Number</label>
+                    <div style="display: flex; align-items: center;">
+                        <select id="table-number" name="table-number" required>
+                            <option value="">Select Table</option>
+                            <option value="1">Table 1</option>
+                            <option value="2">Table 2</option>
+                            <option value="3">Table 3</option>
+                            <option value="4">Table 4</option>
+                            <option value="5">Table 5</option>
+                            <option value="6">Table 6</option>
+                            <option value="7">Table 7</option>
+                            <option value="8">Table 8</option>
+                            <option value="9">Table 9</option>
+                            <option value="10">Table 10</option>
+                        </select>
+                        <button type="button" class="table-qr-btn" id="scan-qr-btn">Scan QR Code</button>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="order-name">Your Name</label>
+                    <input type="text" id="order-name" name="order-name" required>
+                </div>
+                <div class="form-group">
+                    <label for="order-phone">Phone Number</label>
+                    <input type="tel" id="order-phone" name="order-phone" required>
+                </div>
+                <div class="form-group">
+                    <label>Your Order:</label>
+                    <div id="order-summary" style="padding: 10px; background-color: #f9f9f9; border-radius: 5px; margin-bottom: 15px;"></div>
+                </div>
+                <div class="form-group">
+                    <label>Total: <span id="order-total">₹0</span></label>
+                </div>
+                <button type="submit" class="submit-btn">Place Order via WhatsApp</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- QR Scanner Modal -->
+    <div class="qr-scanner-modal" id="qr-scanner-modal">
+        <div class="qr-instructions">
+            <h3 style="color: var(--primary);">Scan Your Table QR Code</h3>
+            <p>Point your camera at the QR code on your table to automatically select your table number.</p>
+        </div>
+        <div class="scanner-container">
+            <video id="qr-video" playsinline></video>
+            <div class="scanner-overlay">
+                <div class="scanner-frame"></div>
+            </div>
+        </div>
+        <div class="scanner-controls">
+            <button class="scanner-btn" id="cancel-scan-btn">Cancel</button>
+            <button class="scanner-btn" id="switch-camera-btn">Switch Camera</button>
+        </div>
+    </div>
+
+    <script>
+        // (Previous JavaScript remains the same until the order form section)
+
+        // QR Code Scanner Functionality
+        const scanQrBtn = document.getElementById('scan-qr-btn');
+        const qrScannerModal = document.getElementById('qr-scanner-modal');
+        const cancelScanBtn = document.getElementById('cancel-scan-btn');
+        const switchCameraBtn = document.getElementById('switch-camera-btn');
+        const qrVideo = document.getElementById('qr-video');
+        const tableNumberSelect = document.getElementById('table-number');
+
+        let stream = null;
+        let facingMode = "environment"; // Start with rear camera
+        let scanningActive = false;
+
+        // Table QR Code Data
+        const tableQrCodes = {
+            "TABLE1": "1",
+            "TABLE2": "2",
+            "TABLE3": "3",
+            "TABLE4": "4",
+            "TABLE5": "5",
+            "TABLE6": "6",
+            "TABLE7": "7",
+            "TABLE8": "8",
+            "TABLE9": "9",
+            "TABLE10": "10"
+        };
+
+        // Open QR scanner
+        scanQrBtn.addEventListener('click', () => {
+            orderModal.classList.remove('active');
+            qrScannerModal.classList.add('active');
+            startScanner();
+        });
+
+        // Close QR scanner
+        cancelScanBtn.addEventListener('click', () => {
+            stopScanner();
+            qrScannerModal.classList.remove('active');
+            orderModal.classList.add('active');
+        });
+
+        // Switch between front and back camera
+        switchCameraBtn.addEventListener('click', () => {
+            facingMode = facingMode === "user" ? "environment" : "user";
+            stopScanner();
+            startScanner();
+        });
+
+        // Start the QR scanner
+        function startScanner() {
+            scanningActive = true;
+            
+            navigator.mediaDevices.getUserMedia({
+                video: {
+                    facingMode: facingMode,
+                    width: { ideal: 1280 },
+                    height: { ideal: 720 }
+                },
+                audio: false
+            }).then(function(s) {
+                stream = s;
+                qrVideo.srcObject = stream;
+                qrVideo.play();
+                requestAnimationFrame(scanQrCode);
+            }).catch(function(err) {
+                console.error("Error accessing camera: ", err);
+                alert("Could not access the camera. Please make sure you have granted camera permissions.");
+                qrScannerModal.classList.remove('active');
+                orderModal.classList.add('active');
+            });
+        }
+
+        // Stop the QR scanner
+        function stopScanner() {
+            scanningActive = false;
+            if (stream) {
+                stream.getTracks().forEach(track => track.stop());
+                qrVideo.srcObject = null;
+            }
+        }
+
+        // Scan for QR codes
+        function scanQrCode() {
+            if (!scanningActive) return;
+            
+            if (qrVideo.readyState === qrVideo.HAVE_ENOUGH_DATA) {
+                const canvas = document.createElement('canvas');
+                canvas.width = qrVideo.videoWidth;
+                canvas.height = qrVideo.videoHeight;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(qrVideo, 0, 0, canvas.width, canvas.height);
+                
+                const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                const code = jsQR(imageData.data, imageData.width, imageData.height, {
+                    inversionAttempts: "dontInvert",
+                });
+                
+                if (code) {
+                    const tableCode = code.data.toUpperCase();
+                    if (tableQrCodes[tableCode]) {
+                        const tableNumber = tableQrCodes[tableCode];
+                        tableNumberSelect.value = tableNumber;
+                        
+                        // Show success feedback
+                        const originalText = switchCameraBtn.textContent;
+                        switchCameraBtn.textContent = "Table " + tableNumber + " detected!";
+                        switchCameraBtn.style.backgroundColor = "#4CAF50";
+                        
+                        // Close scanner after short delay
+                        setTimeout(() => {
+                            stopScanner();
+                            qrScannerModal.classList.remove('active');
+                            orderModal.classList.add('active');
+                            switchCameraBtn.textContent = originalText;
+                            switchCameraBtn.style.backgroundColor = "var(--primary)";
+                        }, 1000);
+                        
+                        return;
+                    }
+                }
+            }
+            
+            requestAnimationFrame(scanQrCode);
+        }
+
+        // Close QR scanner when clicking outside
+        qrScannerModal.addEventListener('click', function(e) {
+            if (e.target === qrScannerModal) {
+                stopScanner();
+                qrScannerModal.classList.remove('active');
+                orderModal.classList.add('active');
+            }
+        });
+
+        // (Rest of the previous JavaScript remains the same)
+    </script>
+</body>
+</html>
