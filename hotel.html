@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hotel Digital Menu</title>
+    <style>
+        /* CSS Styling (style.css content) */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: #4CAF50;
+        }
+
+        #table-info {
+            text-align: center;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+
+        .category {
+            margin-bottom: 20px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 10px;
+        }
+
+        .category h2 {
+            color: #333;
+            margin-top: 0;
+        }
+
+        .menu-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-top: 1px solid #eee;
+        }
+
+        .item-details {
+            flex-grow: 1;
+        }
+
+        .item-details h3 {
+            margin: 0 0 5px 0;
+            font-size: 1.1em;
+        }
+
+        .item-details p {
+            margin: 0;
+            color: #666;
+        }
+
+        .quantity-selector {
+            display: flex;
+            align-items: center;
+        }
+
+        .quantity-selector button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 0 5px;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+
+        .quantity-selector button:active {
+            background-color: #45a049;
+        }
+
+        .quantity-selector input {
+            width: 40px;
+            text-align: center;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 5px 0;
+        }
+
+        #place-order-btn {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            background-color: #008CBA;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 1.2em;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+
+        #place-order-btn:active {
+            background-color: #007B9E;
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 15px;
+            }
+
+            .quantity-selector button {
+                padding: 6px 10px;
+                font-size: 14px;
+            }
+
+            .quantity-selector input {
+                width: 30px;
+                font-size: 14px;
+            }
+
+            #place-order-btn {
+                padding: 12px;
+                font-size: 1em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Welcome to Our Menu!</h1>
+        <p id="table-info"></p>
+
+        <div id="menu-container">
+            </div>
+
+        <button id="place-order-btn">Place Order</button>
+    </div>
+
+    <script>
+        // JavaScript Logic (script.js content)
+        document.addEventListener('DOMContentLoaded', () => {
+            const tableInfoElem = document.getElementById('table-info');
+            const menuContainer = document.getElementById('menu-container');
+            const placeOrderBtn = document.getElementById('place-order-btn');
+
+            const HOTEL_NUMBER = '919876543210'; // Replace with the hotel's WhatsApp number
+
+            // Sample Menu Data
+            const menu = [
+                {
+                    category: 'Appetizers',
+                    items: [
+                        { id: 'spring_rolls', name: 'Spring Rolls', price: 120 },
+                        { id: 'french_fries', name: 'French Fries', price: 90 }
+                    ]
+                },
+                {
+                    category: 'Main Course',
+                    items: [
+                        { id: 'chicken_biryani', name: 'Chicken Biryani', price: 250 },
+                        { id: 'paneer_butter_masala', name: 'Paneer Butter Masala', price: 220 },
+                        { id: 'veg_fried_rice', name: 'Vegetable Fried Rice', price: 180 }
+                    ]
+                },
+                {
+                    category: 'Beverages',
+                    items: [
+                        { id: 'coke', name: 'Coca-Cola', price: 50 },
+                        { id: 'fresh_lime_soda', name: 'Fresh Lime Soda', price: 70 }
+                    ]
+                }
+            ];
+
+            let tableNumber = 'Unknown';
+
+            // 1. Read the table parameter from the URL
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.has('table')) {
+                tableNumber = urlParams.get('table');
+                tableInfoElem.textContent = `You are ordering from Table: ${tableNumber}`;
+            } else {
+                tableInfoElem.textContent = `Welcome! Please scan the QR code at your table.`;
+            }
+
+            // 2. Display the categorized digital menu
+            function displayMenu() {
+                menu.forEach(category => {
+                    const categoryDiv = document.createElement('div');
+                    categoryDiv.classList.add('category');
+                    categoryDiv.innerHTML = `<h2>${category.category}</h2>`;
+
+                    category.items.forEach(item => {
+                        const itemDiv = document.createElement('div');
+                        itemDiv.classList.add('menu-item');
+                        itemDiv.innerHTML = `
+                            <div class="item-details">
+                                <h3>${item.name}</h3>
+                                <p>₹${item.price.toFixed(2)}</p>
+                            </div>
+                            <div class="quantity-selector">
+                                <button data-id="${item.id}" data-action="decrease">-</button>
+                                <input type="number" value="0" min="0" data-id="${item.id}" class="item-quantity">
+                                <button data-id="${item.id}" data-action="increase">+</button>
+                            </div>
+                        `;
+                        categoryDiv.appendChild(itemDiv);
+                    });
+                    menuContainer.appendChild(categoryDiv);
+                });
+            }
+
+            displayMenu();
+
+            // 3. User selects the items and quantities
+            menuContainer.addEventListener('click', (event) => {
+                const target = event.target;
+                if (target.tagName === 'BUTTON' && target.closest('.quantity-selector')) {
+                    const itemId = target.dataset.id;
+                    const action = target.dataset.action;
+                    const quantityInput = document.querySelector(`.item-quantity[data-id="${itemId}"]`);
+                    let currentQuantity = parseInt(quantityInput.value);
+
+                    if (action === 'increase') {
+                        quantityInput.value = currentQuantity + 1;
+                    } else if (action === 'decrease' && currentQuantity > 0) {
+                        quantityInput.value = currentQuantity - 1;
+                    }
+                }
+            });
+
+            // Handle direct input changes for quantity
+            menuContainer.addEventListener('change', (event) => {
+                const target = event.target;
+                if (target.classList.contains('item-quantity')) {
+                    let value = parseInt(target.value);
+                    if (isNaN(value) || value < 0) {
+                        target.value = 0; // Reset to 0 if invalid input
+                    }
+                }
+            });
+
+            // 4. On clicking "Place Order", compile the order and redirect to WhatsApp
+            placeOrderBtn.addEventListener('click', () => {
+                const selectedItems = [];
+                document.querySelectorAll('.item-quantity').forEach(input => {
+                    const quantity = parseInt(input.value);
+                    if (quantity > 0) {
+                        const itemId = input.dataset.id;
+                        // Find the item name from the menu data
+                        let itemName = '';
+                        for (const category of menu) {
+                            const foundItem = category.items.find(item => item.id === itemId);
+                            if (foundItem) {
+                                itemName = foundItem.name;
+                                break;
+                            }
+                        }
+                        selectedItems.push(`${itemName} x${quantity}`);
+                    }
+                });
+
+                if (selectedItems.length === 0) {
+                    alert('Please select some items before placing an order.');
+                    return;
+                }
+
+                const orderText = `Order from Table ${tableNumber}: ${selectedItems.join(', ')}`;
+                const whatsappUrl = `https://wa.me/${HOTEL_NUMBER}?text=${encodeURIComponent(orderText)}`;
+
+                window.open(whatsappUrl, '_blank');
+            });
+        });
+    </script>
+</body>
+</html>
